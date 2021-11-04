@@ -12,9 +12,12 @@ knitr::opts_chunk$set(echo = FALSE)
 library(tidyverse)
 library(kableExtra)
 library(glue)
-library(patchwork)
 anime <- read_csv("anime.csv")
 ```
+
+## Warning
+
+This presentation contains adult themes.
 
 ## Research Questions
 
