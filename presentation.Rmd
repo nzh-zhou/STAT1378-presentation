@@ -1,0 +1,282 @@
+---
+title: "STAT1378 Presentation"
+author: "Ze Hong Zhou"
+date: "03/11/2021"
+output: beamer_presentation
+bibliography: references.bib
+link-citations: TRUE
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(kableExtra)
+library(glue)
+library(patchwork)
+anime <- read_csv("anime.csv")
+```
+
+## Research Questions
+
+1) Do hentai animes have a lower average score compared to non-hentai animes?
+2) Is the average score of animes the same across all release dates?
+
+## Overview
+
+* Data set
+* Question 1 & Question 2
+  - Definitions
+  - Hypotheses and Test Statistic
+  - Assumptions
+  - Conducting the Test
+  - Discussion and Conclusion
+* References
+
+## Data set
+
+* The data set was scraped from [MyAnimeList](https://myanimelist.net/) (MAL) (@anime)
+* MAL is currently the largest anime database
+
+# Question 1: Do hentai animes have a lower average score compared to non-hentai animes?
+
+## Definitions
+
+* The Western definition of hentai is a genre of Japanese anime and manga that contains pornography.
+* We will use H to denote the hentai anime population and N to denote the non-hentai anime population.
+
+## Definitions (continued)
+* In MAL, "Hentai" is a tag under "Genres". This is the what we will be using to classify if an anime is hentai or not.
+
+```{r, out.width = "40%", fig.cap = "The information section of a hentai anime in MAL."}
+knitr::include_graphics("Figures/MALinfo1.png")
+```
+
+```{r q1}
+q1 <- anime %>% select(Score, Genres) %>% 
+  filter(!(Score == "Unknown")) %>% 
+  mutate(Group = ifelse(str_detect(Genres, "Hentai"), "Hentai", "Not Hentai"))
+```
+
+## Hypotheses and Test Statistic
+
+```{r}
+n_H <- sum(q1$Group == "Hentai")
+n_N <- sum(q1$Group == "Not Hentai")
+tau <- paste0("$\\tau = \\frac{\\overline{X}_H -
+              \\overline{X}_N}{\\sqrt{\\frac{S_H^2}{n_H}+\\frac{S_N^2}{n_N}}} =
+              \\frac{\\overline{X}_H - 
+              \\overline{X}_N}{\\sqrt{\\frac{S_H^2}{", 
+              n_H, "}+\\frac{S_N^2}{", n_N, "}}}$")
+
+sd_H <- sd(filter(q1, Group == "Hentai")$Score)
+sd_N <- sd(filter(q1, Group == "Not Hentai")$Score)
+df1 <- (sd_H^2/n_H + sd_N^2/n_N)^2 / 
+  ((sd_H^2/n_H)^2 / (n_H - 1) + (sd_N^2/n_N)^2 / (n_N - 1))
+dis <- paste0("$\\tau \\mathrel{\\dot \\sim} t_{", round(df1, 0), "} \\mathrel{\\dot =} Z$")
+```
+
+* We are testing: 
+  - H$_0$: $\mu_H - \mu_N = 0$ against H$_1$: $\mu_H - \mu_N < 0$.
+* Test statistic:
+  - `r tau`
+* If H$_0$ is true AND assumptions are satisfied:
+  - `r dis`
+
+## Assumptions
+
+* Data from MAL is a random sample from each group population.
+  - We exclude observations with an unknown score or genre.
+* Observations are therefore independent of each other within and across each group.
+
+## Assumptions (continued)
+
+```{r, out.width = "70%", fig.align = "center", fig.pos = "H"}
+ggplot(q1, aes(sample = Score)) +
+  geom_qq(size = 0.5) + geom_qq_line() + facet_wrap(~ Group) +
+  labs(title = "Normal QQ Plots for Average Score \nfor each Group",
+       x = "normal value", y = "height") +
+  theme_bw(base_size = 24)
+```
+
+* The average score variable for each group seems to be normally distributed since the QQ plots mostly follow a straight line.
+
+## Conducting the Test
+
+* Since the statistical test assumptions are satisfied, we can now go ahead with the test.
+* We use the function `t.test` in the `stats` package in R (@stats).
+
+## Conducting the Test (continued)
+
+```{r ctt1}
+test1 <- t.test(Score ~ Group, data = q1, alternative = "less")
+tribble(
+  ~ summary, ~value,
+  "$\\tau_{obs}$", glue(signif(test1$statistic[['t']], 3)),
+  "95\\% confidence interval for $\\mu_H - \\mu_N$", glue("[$-\\infty$, {signif(test1$conf.int[2], 3)}]"),
+  "degrees of freedom", glue(round(test1$parameter[['df']], 0)),
+  "p-value", glue(signif(test1$p.value, 2))
+) %>% 
+  kbl(col.names = NULL, escape = FALSE, align = "rl", 
+      caption = "summary of the Welch two sample test") %>% 
+  kable_styling(latex_options = "hold_position")
+```
+
+As seen in table 1, the p-value < < 5%, so we reject H$_0$.
+
+## Discussion and Conclusion
+
+* Our aim was to determine if the average score of hentai animes is lower than that of non-hentai animes.
+* After testing the assumptions for the Welch two sample t-test and conducting it, we conclude that it is indeed lower.
+
+# Question 2: Is the average score of animes the same across all release dates?
+
+## Definitions
+
+* The release date of an anime is the date that the first episode aired.
+* MAL contains information on the air dates of animes under "Aired".
+
+## Definitions (continued)
+
+In figure 2, the release date of "Shinsekai yori" is Sep 29, 2012.
+
+```{r, out.width = "40%", fig.cap = "The information section of Shinsekai yori in MAL."}
+knitr::include_graphics("Figures/MALinfo2.png")
+```
+
+```{r q2}
+tab <- c(Jan = 0, Feb = 31, Mar = 59, Apr = 90, May = 120, Jun = 151, 
+         Jul = 181, Aug = 212, Sep = 243, Oct = 273, Nov = 304, Dec = 334)
+
+# account for month
+q2 <- anime %>% select(Score, Aired) %>% 
+  filter(!(Aired == "Unknown" | Score == "Unknown")) %>% 
+  mutate(Release = unname(tab[str_sub(Aired, 1, 3)]/365))
+
+subs <- q2$Aired %>% str_sub(5, 6) %>% as.numeric() %>% is.na()
+
+# account for day
+q2$Release[subs] <- q2$Release[subs] + 
+  q2$Aired[subs] %>% str_sub(5, 5) %>% as.numeric()/365
+q2$Release[!subs] <- q2$Release[!subs] + 
+  q2$Aired[!subs] %>% str_sub(5, 6) %>% as.numeric()/365
+
+# account for year
+q2$Release[subs] <- q2$Release[subs] + 
+  q2$Aired[subs] %>% str_sub(8, 11) %>% as.numeric()
+q2$Release[!subs] <- q2$Release[!subs] + 
+  q2$Aired[!subs] %>% str_sub(9, 12) %>% as.numeric()
+
+
+### some air dates only have month and year or year only
+q2$Release[q2$Release < 1700] <- NA
+temp <- q2
+
+temp$Aired[subs] <- temp$Aired[subs] %>% str_sub(8, 11)
+temp$Aired[!subs] <- temp$Aired[!subs] %>% str_sub(9, 12)
+temp$Aired <- as.numeric(temp$Aired)
+
+## month and year
+# account for month
+q2$Release[is.na(temp$Release)] <- unname(tab[str_sub(q2$Aired, 1, 3)]/365)
+
+# account for year
+q2$Release[is.na(temp$Release)] <- q2$Release[is.na(temp$Release)] +
+  q2$Aired[is.na(temp$Release)] %>% str_sub(6, 9) %>% as.numeric()
+
+## year only
+q2$Release[is.na(q2$Release)] <- q2$Aired[is.na(q2$Release)] %>% 
+  str_sub(1, 4) %>% as.numeric()
+```
+
+## Hypotheses and Test Statistic
+
+Let the independent variable, $X$, be release date, and the dependent variable, $Y$, be average score.
+
+* We are testing: 
+  - H$_0$: $\beta = 0$ against H$_1$: $\beta \neq 0$.
+* Test statistic:
+  - $\tau = \frac{\hat\beta}{s_{Y|X}/\sqrt{S_{XX}}}$
+* If H$_0$ is true AND assumptions are satisfied:
+  - `r paste0("$\\tau \\sim t_{", nrow(q2) - 2, "} \\mathrel{\\dot =} Z$")`
+
+## Assumptions
+
+* Data from MAL is a random sample from the anime population.
+  - We exclude observations with an unknown score or release date.
+* Observations are therefore independent of each other.
+
+## Assumptions (continued)
+
+```{r}
+# average score vs. release date
+ggplot(q2, aes(x = Release, y = Score)) + geom_point(size = 0.3) + 
+  geom_smooth(method = lm, formula = y ~ x) + 
+  labs(title = "Average Score vs. Release Date", 
+       x = "release date", y = "average score") + 
+  theme_bw(base_size = 24)
+```
+
+## Assumptions (continued)
+
+```{r}
+lm2 <- lm(q2$Score ~ q2$Release)
+# regression residuals vs. fitted values
+ggplot(data.frame(x = lm2$fitted.values, y = lm2$residuals), 
+       aes(x, y)) + geom_point(size = 0.3) + 
+  geom_smooth(method = lm, se = FALSE, formula = y ~ x) + 
+  labs(title = "Regression Residuals vs. Fitted Values", 
+       x = "fitted values", y = "residuals") +
+  theme_bw(base_size = 24)
+```
+
+## Assumptions (continued)
+
+```{r}
+ggplot(data.frame(x = lm2$residuals), aes(x)) +
+  geom_histogram(bins = 30) + 
+  labs(title = "Histogram of Regression Residuals", 
+       x = "residual bins") + 
+  theme_bw(base_size = 24)
+```
+
+## Assumptions (continued)
+
+* There seems to be a linear trend between average score and release date.
+* For any value of the fitted value, the residuals seem to be normally distributed with a constant variance.
+
+## Conducting the Test
+
+* Since the statistical test assumptions are satisfied, we can now go ahead with the test.
+* We use the function `lm` in the `stats` package in R (@stats).
+
+## Conducting the Test (continued)
+
+```{r ctt2}
+slm2 <- summary(lm2)
+tribble(
+  ~ summary, ~value,
+  "$\\hat\\beta$", glue(signif(slm2$coefficients[2, 1], 2)),
+  "95\\% confidence interval for $\\beta$", glue("[{signif(confint(lm2)[2, 1], 2)}, {signif(confint(lm2)[2, 2], 2)}]"),
+  "t-value", glue(signif(slm2$coefficients[2, 3], 3)),
+  "degrees of freedom", glue(slm2$df[2]),
+  "p-value", glue(signif(slm2$coefficients[2, 4], 2))
+) %>% 
+  kbl(col.names = NULL, escape = FALSE, align = "rl", 
+      caption = "summary of the linear regression coefficient t-test") %>% 
+  kable_styling(latex_options = "hold_position")
+```
+
+As seen in table 2, the p-value < < 5%, so we reject H$_0$.
+
+## Discussion and Conclusion
+
+* Our aim was to determine if the average score of animes is the same across all release dates.
+* After testing the assumptions for the linear regression coefficient t-test and conducting it, we conclude that it is not the same across release dates, but rather it increases by about `r signif(slm2$coefficients[2, 1], 2)` each year.
+
+## Thank you!
+
+Thank you for your attention!
+
+I hope that this has answered all your anime curiosities.
+
+## References
