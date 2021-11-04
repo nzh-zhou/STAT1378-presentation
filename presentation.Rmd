@@ -2,7 +2,9 @@
 title: "STAT1378 Presentation"
 author: "Ze Hong Zhou"
 date: "03/11/2021"
-output: beamer_presentation
+output: 
+  beamer_presentation:
+    colortheme: "seahorse"
 bibliography: references.bib
 link-citations: TRUE
 ---
@@ -47,7 +49,8 @@ This presentation contains adult themes.
 * The Western definition of hentai is a genre of Japanese anime and manga that contains pornography.
 * We will use H to denote the hentai anime population and N to denote the non-hentai anime population.
 
-## Definitions (continued)
+---
+
 * In MAL, "Hentai" is a tag under "Genres". This is the what we will be using to classify if an anime is hentai or not.
 
 ```{r, out.width = "40%", fig.cap = "The information section of a hentai anime in MAL."}
@@ -91,7 +94,7 @@ dis <- paste0("$\\tau \\mathrel{\\dot \\sim} t_{", round(df1, 0), "} \\mathrel{\
   - We exclude observations with an unknown score or genre.
 * Observations are therefore independent of each other within and across each group.
 
-## Assumptions (continued)
+---
 
 ```{r, out.width = "70%", fig.align = "center", fig.pos = "H"}
 ggplot(q1, aes(sample = Score)) +
@@ -108,7 +111,7 @@ ggplot(q1, aes(sample = Score)) +
 * Since the statistical test assumptions are satisfied, we can now go ahead with the test.
 * We use the function `t.test` in the `stats` package in R (@stats).
 
-## Conducting the Test (continued)
+---
 
 ```{r ctt1}
 test1 <- t.test(Score ~ Group, data = q1, alternative = "less")
@@ -138,7 +141,7 @@ As seen in table 1, the p-value < < 5%, so we reject H$_0$.
 * The release date of an anime is the date that the first episode aired.
 * MAL contains information on the air dates of animes under "Aired".
 
-## Definitions (continued)
+---
 
 In figure 2, the release date of "Shinsekai yori" is Sep 29, 2012.
 
@@ -146,7 +149,7 @@ In figure 2, the release date of "Shinsekai yori" is Sep 29, 2012.
 knitr::include_graphics("Figures/MALinfo2.png")
 ```
 
-```{r q2}
+```{r q2, warning = FALSE}
 tab <- c(Jan = 0, Feb = 31, Mar = 59, Apr = 90, May = 120, Jun = 151, 
          Jul = 181, Aug = 212, Sep = 243, Oct = 273, Nov = 304, Dec = 334)
 
@@ -208,7 +211,7 @@ Let the independent variable, $X$, be release date, and the dependent variable, 
   - We exclude observations with an unknown score or release date.
 * Observations are therefore independent of each other.
 
-## Assumptions (continued)
+---
 
 ```{r}
 # average score vs. release date
@@ -219,7 +222,7 @@ ggplot(q2, aes(x = Release, y = Score)) + geom_point(size = 0.3) +
   theme_bw(base_size = 24)
 ```
 
-## Assumptions (continued)
+---
 
 ```{r}
 lm2 <- lm(q2$Score ~ q2$Release)
@@ -232,7 +235,7 @@ ggplot(data.frame(x = lm2$fitted.values, y = lm2$residuals),
   theme_bw(base_size = 24)
 ```
 
-## Assumptions (continued)
+---
 
 ```{r}
 ggplot(data.frame(x = lm2$residuals), aes(x)) +
@@ -242,7 +245,7 @@ ggplot(data.frame(x = lm2$residuals), aes(x)) +
   theme_bw(base_size = 24)
 ```
 
-## Assumptions (continued)
+---
 
 * There seems to be a linear trend between average score and release date.
 * For any value of the fitted value, the residuals seem to be normally distributed with a constant variance.
@@ -252,7 +255,7 @@ ggplot(data.frame(x = lm2$residuals), aes(x)) +
 * Since the statistical test assumptions are satisfied, we can now go ahead with the test.
 * We use the function `lm` in the `stats` package in R (@stats).
 
-## Conducting the Test (continued)
+---
 
 ```{r ctt2}
 slm2 <- summary(lm2)
