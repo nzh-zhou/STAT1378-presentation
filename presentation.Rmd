@@ -1,12 +1,13 @@
 ---
 title: "STAT1378 Presentation"
-author: "Ze Hong Zhou"
+author: "Ze Hong (Nathan) Zhou"
 date: "03/11/2021"
 output: 
   beamer_presentation:
     colortheme: "seahorse"
 bibliography: references.bib
 link-citations: TRUE
+csl: acm-sig-proceedings.csl
 ---
 
 ```{r setup, include=FALSE}
@@ -30,6 +31,8 @@ This presentation contains adult themes.
 knitr::include_graphics("Figures/hentai.png")
 ```
 
+Source: @hentai
+
 ## Overview
 
 * Data set
@@ -43,7 +46,7 @@ knitr::include_graphics("Figures/hentai.png")
 
 ## Data set
 
-* The data set was scraped from [MyAnimeList](https://myanimelist.net/) (MAL) (@anime)
+* The data set was scraped from [MyAnimeList](https://myanimelist.net/) (MAL) @anime
 * MAL is currently the largest anime database
 
 # Question 1: Do hentai animes have a lower average score compared to non-hentai animes?
@@ -113,7 +116,7 @@ ggplot(q1, aes(sample = Score)) +
 ## Conducting the Test
 
 * Since the statistical test assumptions are satisfied, we can now go ahead with the test.
-* We use the function `t.test` in the `stats` package in R (@stats).
+* We use the function `t.test` in the `stats` package in R @stats.
 
 ---
 
@@ -257,7 +260,7 @@ ggplot(data.frame(x = lm2$residuals), aes(x)) +
 ## Conducting the Test
 
 * Since the statistical test assumptions are satisfied, we can now go ahead with the test.
-* We use the function `lm` in the `stats` package in R (@stats).
+* We use the function `lm` in the `stats` package in R @stats.
 
 ---
 
@@ -293,4 +296,8 @@ I hope that this has answered all your anime curiosities.
 knitr::include_graphics("Figures/catsleep.jpg")
 ```
 
+Source: @catsleep
+
 ## References
+
+\small
