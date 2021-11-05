@@ -89,7 +89,8 @@ dis <- paste0("$\\tau \\mathrel{\\dot \\sim} t_{", round(df1, 0), "} \\mathrel{\
 ```
 
 * We are testing: 
-  - H$_0$: $\mu_H - \mu_N = 0$ against H$_1$: $\mu_H - \mu_N < 0$.
+  - H$_0$: $\mu_H - \mu_N = 0$ against H$_1$: $\mu_H - \mu_N < 0$
+  - 5% significance level
 * Test statistic:
   - `r tau`
 * If H$_0$ is true AND assumptions are satisfied:
@@ -206,7 +207,8 @@ q2$Release[is.na(q2$Release)] <- q2$Aired[is.na(q2$Release)] %>%
 Let the independent variable, $X$, be release date, and the dependent variable, $Y$, be average score.
 
 * We are testing: 
-  - H$_0$: $\beta = 0$ against H$_1$: $\beta \neq 0$.
+  - H$_0$: $\beta = 0$ against H$_1$: $\beta \neq 0$
+  - 5% significance level
 * Test statistic:
   - $\tau = \frac{\hat\beta}{s_{Y|X}/\sqrt{S_{XX}}}$
 * If H$_0$ is true AND assumptions are satisfied:
