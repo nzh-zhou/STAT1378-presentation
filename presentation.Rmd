@@ -26,6 +26,10 @@ This presentation contains adult themes.
 1) Do hentai animes have a lower average score compared to non-hentai animes?
 2) Is the average score of animes the same across all release dates?
 
+```{r, out.width = "60%", fig.align = "center"}
+knitr::include_graphics("Figures/hentai.png")
+```
+
 ## Overview
 
 * Data set
@@ -53,7 +57,7 @@ This presentation contains adult themes.
 
 * In MAL, "Hentai" is a tag under "Genres". This is the what we will be using to classify if an anime is hentai or not.
 
-```{r, out.width = "40%", fig.cap = "The information section of a hentai anime in MAL."}
+```{r, out.width = "40%", fig.cap = "The information section of a hentai anime in MAL.", fig.align = "center"}
 knitr::include_graphics("Figures/MALinfo1.png")
 ```
 
@@ -92,7 +96,7 @@ dis <- paste0("$\\tau \\mathrel{\\dot \\sim} t_{", round(df1, 0), "} \\mathrel{\
 
 * Data from MAL is a random sample from each group population.
   - We exclude observations with an unknown score or genre.
-* Observations are therefore independent of each other within and across each group.
+* Observations are therefore independent of each other within and across each group population.
 
 ---
 
@@ -145,7 +149,7 @@ As seen in table 1, the p-value < < 5%, so we reject H$_0$.
 
 In figure 2, the release date of "Shinsekai yori" is Sep 29, 2012.
 
-```{r, out.width = "40%", fig.cap = "The information section of Shinsekai yori in MAL."}
+```{r, out.width = "40%", fig.cap = "The information section of Shinsekai yori in MAL.", fig.align = "center"}
 knitr::include_graphics("Figures/MALinfo2.png")
 ```
 
@@ -284,5 +288,9 @@ As seen in table 2, the p-value < < 5%, so we reject H$_0$.
 Thank you for your attention!
 
 I hope that this has answered all your anime curiosities.
+
+```{r, out.width = "60%", fig.align = "center"}
+knitr::include_graphics("Figures/catsleep.jpg")
+```
 
 ## References
