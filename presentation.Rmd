@@ -20,7 +20,7 @@ anime <- read_csv("anime.csv")
 
 ## Warning
 
-This presentation contains adult themes.
+This presentation contains adult themes and cringe.
 
 ## Research Questions
 
