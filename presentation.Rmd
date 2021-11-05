@@ -107,7 +107,7 @@ dis <- paste0("$\\tau \\mathrel{\\dot \\sim} t_{", round(df1, 0), "} \\mathrel{\
 ggplot(q1, aes(sample = Score)) +
   geom_qq(size = 0.5) + geom_qq_line() + facet_wrap(~ Group) +
   labs(title = "Normal QQ Plots for Average Score \nfor each Group",
-       x = "normal value", y = "height") +
+       x = "normal value", y = "average score") +
   theme_bw(base_size = 24)
 ```
 
