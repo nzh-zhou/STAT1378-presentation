@@ -99,7 +99,7 @@ dis <- paste0("$\\tau \\mathrel{\\dot \\sim} t_{", round(df1, 0), "} \\mathrel{\
 
 * Data from MAL is a random sample from each group population.
   - We exclude observations with an unknown score or genre.
-* Observations are therefore independent of each other within and across each group population.
+* Observations are therefore independent of each other within and across each group.
 
 ---
 
